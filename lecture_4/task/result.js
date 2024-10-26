@@ -28,6 +28,13 @@ class BCD {
   maxBCD = 7;
   info = { numberLength: 0 };
 
+  createMask(pos) {
+    let r = ~0;
+    r <<= 28;
+    r >>>= 32 - pos;
+    return r;
+  }
+
   complementTo9(number) {
     let result = "";
     while (number > 0n) {
@@ -94,6 +101,7 @@ class BCD {
   }
 
   constructor(num) {
+    this.number = num;
     this.numbers = this.createBCDArray(num, this.info);
   }
 
@@ -158,7 +166,7 @@ class BCD {
     });
   }
 
-  sun2Numbers(num1, num2) {
+  sum2Numbers(num1, num2) {
     let result = 0;
     let sumWithoutShift = num1 ^ num2; //1110
     let shiftBits = num1 & num2; //0001
@@ -175,7 +183,7 @@ class BCD {
     return result;
   }
 
-  add(num) {
+  add(num, isSub) {
     let shift = 0;
     const correctNum = 0b0110;
     const info = { numberLength: 0 };
@@ -187,11 +195,11 @@ class BCD {
       const num1 = this.get(i) ?? 0;
       const num2 = this.getNumBCD(addendBCD, i, info.numberLength) ?? 0;
 
-      let result = this.sun2Numbers(num1, num2);
-      result = this.sun2Numbers(result, shift);
+      let result = this.sum2Numbers(num1, num2);
+      result = this.sum2Numbers(result, shift);
 
       if (result > 9) {
-        result = this.sun2Numbers(result, correctNum);
+        result = this.sum2Numbers(result, correctNum);
       }
       if (result >= 0b1_0000) {
         shift = 1;
@@ -201,16 +209,82 @@ class BCD {
       resultBCD.push(this.getFirstBitsBCD(result));
     }
 
-    resultBCD.push(shift);
+    if (!isSub) {
+      resultBCD.push(shift);
+    }
 
-    return this.combineBCD(this.createBCD(resultBCD));
+    const resultArr = this.createBCD(resultBCD);
+    this.numbers = resultArr;
+
+    if (isSub) {
+      return this.add(shift);
+    }
+
+    return this.combineBCD(this.numbers);
+  }
+
+  alignNumbers(num1, num2) {
+    let length1 = 0n;
+    let length2 = 0n;
+    let temp1 = num1;
+    let temp2 = num2;
+
+    while (temp1 > 0n) {
+      temp1 /= 10n;
+      length1++;
+    }
+    while (temp2 > 0n) {
+      temp2 /= 10n;
+      length2++;
+    }
+
+    num2 += 10n ** length1 - 1n - (10n ** length2 - 1n);
+
+    return num2;
+  }
+
+  complementTo9BCD(bcdArr) {
+    return bcdArr.map((num) => {
+      for (let i = this.maxBCD; i > 0; i--) {
+        const mask = this.createMask(i * 4);
+        const shift = 4 * i - 4;
+        const bcd = (num & mask) >>> shift;
+        if (!bcd) continue;
+        const bcdTo9 = 9 - bcd;
+        num = (num & ~mask) | (bcdTo9 << shift);
+      }
+
+      return num;
+    });
+  }
+
+  subtract(num) {
+    if(this.number === num) {
+      this.numbers = [0n]
+      return 0n
+    }
+    if(num < 0) {
+      return this.add(-num);
+    }
+    if (this.number > num) {
+      const subtractBCD = this.complementTo9(num);
+      const subNum = this.alignNumbers(this.number, subtractBCD);
+      return this.add(subNum, true);
+    } else {
+      const subNum = this.complementTo9(num);
+      this.add(subNum);
+      this.numbers = this.complementTo9BCD(this.numbers);
+      this.numbers[0] |= this.negativeBit
+      return this.valueOf()
+    }
   }
 }
 
-const n = new BCD(10n);
+const n = new BCD(-1n);
 n.getBCDArray();
 console.log("🚀 ~ n: valueOf", n.valueOf());
 console.log("🚀 ~ n:", n.get(-1));
 console.log("🚀 ~ n:", n.isNegative);
 
-console.log("n.add", n.add(15n)); // 0b00100101 или 37
+// console.log("n.add", n.add(67n).toString(2)); // 0b00100101 или 37
+console.log("n.subtract", n.subtract(-11n)?.toString(2));
