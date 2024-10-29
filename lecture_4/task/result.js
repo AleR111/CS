@@ -302,15 +302,29 @@ class BCD {
       return this.valueOf();
     }
   }
+
+  multiply(num) {
+    while (num > 0) {
+      console.log("🚀 ~ BCD ~ multiply ~ num:", num);
+
+      num--;
+    }
+  }
+
+  divide(num) {
+
+  }
 }
 
-const n = new BCD(123456789n);
+const n = new BCD(10n);
 n.getBCDArray();
-console.log("🚀 ~ n: valueOf", n.valueOf());
+console.log("🚀 ~ n: valueOf", n.valueOf().toString(2));
 console.log("🚀 ~ n:", n.get(-1));
 console.log("🚀 ~ n:", n.isNegative);
 
 // console.log("n.add", n.add(15n).toString(2)); // 0b00100101 или 37
 // console.log("n.subtract", n.subtract(10n)?.toString(2));
 // console.log("n.subtract", n.subtract(-10n)?.toString(2));
-console.log("n.subtract", n.subtract(123456779n)?.toString(2));
+// console.log("n.subtract", n.subtract(123456779n)?.toString(2));
+console.log(n.multiply(5n)); // 0b00100000 или 32
+console.log(n.divide(2n));   // 0b00010000 или 16
