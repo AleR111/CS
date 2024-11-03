@@ -508,6 +508,27 @@ class BCD {
 }
 
 {
+  const bcd = new BCD(123456780n);
+
+  const bcd2 = bcd.add(11n).subtract(2n);
+
+  equal(
+    bcd2.valueOf(),
+
+    BigInt(9) |
+      (BigInt(8) << BigInt(4)) |
+      (BigInt(7) << BigInt(8)) |
+      (BigInt(6) << BigInt(12)) |
+      (BigInt(5) << BigInt(16)) |
+      (BigInt(4) << BigInt(20)) |
+      (BigInt(3) << BigInt(24)) |
+      (BigInt(2) << BigInt(28)) |
+      (BigInt(1) << BigInt(32)) |
+      (BigInt(BCD.PLUS) << BigInt(36))
+  );
+}
+
+{
   const bcd = new BCD(123456789n);
 
   deepEqual(bcd.buffer, [
