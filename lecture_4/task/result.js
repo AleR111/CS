@@ -292,7 +292,7 @@ class BCD {
         this.lengthNum(num),
         subtractBCD
       );
-
+//
       return this.add(subNum, true);
     } else {
       const subNum = this.complementTo9(num);
