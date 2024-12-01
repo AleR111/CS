@@ -2,7 +2,7 @@ interface VectorOptions {
   capacity: number;
 }
 
-type TypedArray =
+export type TypedArray =
   | Int8Array
   | Uint8Array
   | Uint8ClampedArray
@@ -13,7 +13,7 @@ type TypedArray =
   | Float32Array
   | Float64Array;
 
-type TypedArrayConstructor =
+export type TypedArrayConstructor =
   | Int8ArrayConstructor
   | Uint8ArrayConstructor
   | Uint8ClampedArrayConstructor
