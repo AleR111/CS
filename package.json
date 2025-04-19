@@ -1,5 +1,6 @@
 {
   "dependencies": {
+    "jsdom": "^26.0.0",
     "ts-node": "^10.9.2",
     "typescript": "^5.6.3"
   },
@@ -19,5 +20,8 @@
   "bugs": {
     "url": "https://github.com/AleR111/CS/issues"
   },
-  "homepage": "https://github.com/AleR111/CS#readme"
+  "homepage": "https://github.com/AleR111/CS#readme",
+  "devDependencies": {
+    "@types/jsdom": "^21.1.7"
+  }
 }
